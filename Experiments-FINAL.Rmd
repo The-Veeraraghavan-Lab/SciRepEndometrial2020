@@ -64,8 +64,9 @@ knitr::opts_chunk$set(echo = TRUE)
 Load in the clinical data and the features
 
 ```{r, echo=FALSE, warning=FALSE}
-  feat.data <- read.csv("CERRFeatures_Nov18_2019_Res_InnerOuter_wOutcomes-onlyMSK.csv")
+  #feat.data <- read.csv("CERRFeatures_Nov18_2019_Res_InnerOuter_wOutcomes-onlyMSK.csv")
   clin.data <- read.csv("clinData_Nov18_2019.csv")
+  feat.data <- read.csv("CERRFeatures_FINAL.csv")
 ```
 
 Merge the data from the two to combine clinical data with the features
@@ -105,23 +106,22 @@ Merge the data from the two to combine clinical data with the features
   print(sum(as.numeric(feat.data$MolecularSubtype ==1), na.rm=T)) ## (Ultra-mutated POLE-E tumors)
   print(sum(as.numeric(feat.data$MolecularSubtype ==2), na.rm=T)) ## (MSI hypermutated tumors)
 
-  print(sum(as.numeric(feat.data$CT_Make==1),na.rm=T)) #GE
-  print(sum(as.numeric(feat.data$CT_Make==2),na.rm=T)) #Philips
-  print(sum(as.numeric(feat.data$CT_Make==3),na.rm=T)) #Seimens
-  print(sum(as.numeric(feat.data$CT_Make==4),na.rm=T)) #Toshiba
+  print(sum(as.numeric(feat.data$CT_Make=="GE"),na.rm=T)) #GE
+  print(sum(as.numeric(feat.data$CT_Make=="Philips"),na.rm=T)) #Philips
+  print(sum(as.numeric(feat.data$CT_Make=="Siemens"),na.rm=T)) #Seimens
+  print(sum(as.numeric(feat.data$CT_Make=="Toshiba"),na.rm=T)) #Toshiba
   
-  print(sum(as.numeric(feat.data$FIGO==1),na.rm=T)) #Poorly differentiated
-  print(sum(as.numeric(feat.data$FIGO==2),na.rm = T)) #Well differentiated
+  print(sum(as.numeric(feat.data$FIGO=="Poorly-differentiated"),na.rm=T)) #Poorly differentiated
+  print(sum(as.numeric(feat.data$FIGO=="Well-differentiated"),na.rm=T)) #Poorly di  
+  print(sum(as.numeric(feat.data$Stage=="Extra-uterine "),na.rm=T)) #Extra-uterine
+  print(sum(as.numeric(feat.data$Stage=="Uterus-confined"),na.rm = T)) #Uterus-confined
   
-  print(sum(as.numeric(feat.data$Stage==1),na.rm=T)) #Extra-uterine
-  print(sum(as.numeric(feat.data$Stage==2),na.rm = T)) #Uterus-confined
-  
-  print(sum(as.numeric(feat.data$Histology==1),na.rm=T)) #Carcinosarcoma
-  print(sum(as.numeric(feat.data$Histology==2),na.rm = T)) #Clear-cell
-  print(sum(as.numeric(feat.data$Histology==3),na.rm=T)) #Endometrioid
-  print(sum(as.numeric(feat.data$Histology==4),na.rm = T)) #High-grade
-  print(sum(as.numeric(feat.data$Histology==5),na.rm=T)) #Serous
-  print(sum(as.numeric(feat.data$Histology==6),na.rm = T)) #Undifferentiated/de-differentiated
+  print(sum(as.numeric(feat.data$Histology=="Carcinosarcoma "),na.rm=T)) #Carcinosarcoma
+  print(sum(as.numeric(feat.data$Histology=="Clear-cell type "),na.rm = T)) #Clear-cell
+  print(sum(as.numeric(feat.data$Histology=="Endometrioid type "),na.rm=T)) #Endometrioid
+  print(sum(as.numeric(feat.data$Histology=="High-grade type"),na.rm = T)) #High-grade
+  print(sum(as.numeric(feat.data$Histology=="Serous type"),na.rm=T)) #Serous
+  print(sum(as.numeric(feat.data$Histology=="Un-differentiated/de-differentiated type"),na.rm = T)) #Undifferentiated/de-differentiated
   
 
 ```
@@ -138,12 +138,6 @@ Partition into training and testing
    
      ### difference in histology between training and testing set 
   tidy(fisher.test(t(matrix(c(c(45, 17, 22, 9, 8, 3), c(15, 11, 2, 4, 13, 1)), nrow=2, ncol=6, dimnames = list(c("Train", "Test"), c("Endometroid", "Clear cell", "Carcinosarcoma", "Unclassified", "Serous", "Undifferentiated")))), alternative="two.sided", hybrid=TRUE, workspace = 2e+07))
-  
-  ## difference in grade between training and testing set
-  wilcox.test(train_set_All$FIGO, test_set_All$FIGO)
-  
-  ## difference in stage between training and testing set
-  wilcox.test(train_set_All$Stage, test_set_All$Stage)
   
   ##difference in the molecular subtype between training and testing set
   tidy(fisher.test(t(matrix(c(c(3, 3, 33, 11), c(20, 8, 49, 23)), nrow=2, ncol=4, dimnames = list(c("Train", "Test"), c("POLE", "MMR-D", "CN-low", "CN-high")))), alternative="two.sided", hybrid=TRUE, workspace=2e+07))
